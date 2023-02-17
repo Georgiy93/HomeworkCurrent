@@ -40,6 +40,10 @@ class FeedFragment : Fragment() {
             override fun onRemove(post: Post) {
                 viewModel.removeById(post.id)
             }
+            override fun avatarLoad(post: Post){
+                viewModel.avatarLoad(post)
+
+            }
 
             override fun onShare(post: Post) {
                 val intent = Intent().apply {

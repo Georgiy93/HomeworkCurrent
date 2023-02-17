@@ -10,7 +10,7 @@ interface PostRepository {
     fun likeById(post: Post, callback: Callback<Post> )
     fun save(post: Post, callback: Callback<Unit>)
     fun removeById(id: Long,callback: Callback<Unit>)
-
+    fun avatarLoad(post: Post, callback: Callback<Post>)
 
     interface Callback<T> {
         fun onSuccess(data: T) {}

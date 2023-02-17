@@ -16,7 +16,7 @@ private val empty = Post(
     author = "",
     likedByMe = false,
     likes = 0,
-    published = ""
+    published = "",
 )
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
@@ -82,14 +82,14 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     fun likeById(post: Post) {
 
 
-            repository.likeById(post,
-                object : PostRepository.Callback<Post>{
-                    override fun onSuccess(post: Post) {
+        repository.likeById(post,
+            object : PostRepository.Callback<Post>{
+                override fun onSuccess(post: Post) {
 
-                        _data.postValue(
-                            _data.value?.copy (posts = _data.value?.posts.orEmpty()
-                                .map { if (it.id == post.id) post else it }))
-                    }
+                    _data.postValue(
+                        _data.value?.copy (posts = _data.value?.posts.orEmpty()
+                            .map { if (it.id == post.id) post else it }))
+                }
             })
 
 
@@ -113,5 +113,16 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             }
         })
 
+    }
+    fun avatarLoad(post: Post) {
+        repository.avatarLoad(post,
+            object : PostRepository.Callback<Post>{
+                override fun onSuccess(post: Post) {
+
+                    _data.postValue(
+                        _data.value?.copy (posts = _data.value?.posts.orEmpty()
+                            .map { if (it.id == post.id) post else it }))
+                }
+            })
     }
 }
