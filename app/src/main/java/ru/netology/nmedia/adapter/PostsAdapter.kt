@@ -1,5 +1,7 @@
 package ru.netology.nmedia.adapter
 
+import android.content.Intent
+import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,14 +10,17 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nmedia.R
+import ru.netology.nmedia.activity.AvatarLoadActivity
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
+
 
 interface OnInteractionListener {
     fun onLike(post: Post) {}
     fun onEdit(post: Post) {}
     fun onRemove(post: Post) {}
     fun onShare(post: Post) {}
+    fun avatarLoad(post: Post){}
 }
 
 class PostsAdapter(
@@ -37,11 +42,32 @@ class PostViewHolder(
     private val onInteractionListener: OnInteractionListener,
 ) : RecyclerView.ViewHolder(binding.root) {
 
+
+
     fun bind(post: Post) {
+
         binding.apply {
             author.text = post.author
             published.text = post.published
             content.text = post.content
+
+            avatar.setOnClickListener {
+
+
+
+                val intent=Intent(avatar.context,AvatarLoadActivity::class.java)
+
+
+
+                avatar.context.startActivity(intent)
+
+
+            }
+
+
+
+
+
             // в адаптере
             like.isChecked = post.likedByMe
             like.text = "${post.likes}"

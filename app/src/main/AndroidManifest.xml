@@ -13,7 +13,9 @@
         android:usesCleartextTraffic="${usesCleartextTraffic}">
         <activity
             android:name=".activity.AppActivity"
-            android:exported="true">
+            android:exported="true"
+            >
+
             <nav-graph android:value="@navigation/nav_main" />
 
             <intent-filter>
@@ -29,6 +31,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".activity.AvatarLoadActivity"
+            android:exported="false" />
         <service
             android:name=".service.FCMService"
             android:exported="false">
@@ -37,5 +42,4 @@
             </intent-filter>
         </service>
     </application>
-
 </manifest>

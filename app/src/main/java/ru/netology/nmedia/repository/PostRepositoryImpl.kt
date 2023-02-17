@@ -148,4 +148,30 @@ class PostRepositoryImpl : PostRepository {
                 }
             })
     }
+
+    override fun avatarLoad(post: Post, callback: PostRepository.Callback<Post>) {
+        val request: Request = Request.Builder().
+        url("${BASE_URL}/api/slow/posts/${post.id}")
+            .build()
+
+        return client.newCall(request)
+            .enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    callback.onError(e)
+                }
+                override fun onResponse(call: Call, response: Response) {
+                    if (!response.isSuccessful) {
+                        callback.onError(Exception(response.message))
+                        return
+                    }
+                    val data:Post= response.body?.string()
+                        .let { gson.fromJson(it, Post::class.java) }
+
+
+                    callback.onSuccess(data)
+                }
+            })
+
+    }
 }
+

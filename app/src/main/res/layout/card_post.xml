@@ -14,6 +14,7 @@
 
         <ImageView
             android:id="@+id/avatar"
+            android:checkable="true"
             android:layout_width="@dimen/posts_avatar_size"
             android:layout_height="@dimen/posts_avatar_size"
             android:layout_marginBottom="@dimen/common_spacing"
@@ -21,7 +22,23 @@
             app:layout_constraintBottom_toBottomOf="@id/header"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:srcCompat="@sample/posts.json/data/authorAvatar" />
+
+
+            tools:srcCompat="@sample/posts.json/data/authorAvatar"
+
+            />
+
+<!--        <com.google.android.material.button.MaterialButton-->
+<!--            android:id="@+id/load"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="8dp"-->
+<!--            android:text="@string/load"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/avatar"-->
+<!--            app:layout_constraintStart_toStartOf="@id/avatar"-->
+<!--            app:layout_constraintBottom_toBottomOf="@id/header"-->
+<!--            />-->
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/sync"
             android:layout_width="wrap_content"
@@ -125,5 +142,6 @@
             app:icon="@drawable/ic_share_24"
             style="@style/Widget.AppTheme.IconButton"
             />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
