@@ -3,10 +3,14 @@ package ru.netology.nmedia.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.PopupMenu
+import androidx.annotation.DrawableRes
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.CardPostBinding
 import ru.netology.nmedia.dto.Post
@@ -16,7 +20,12 @@ interface OnInteractionListener {
     fun onEdit(post: Post) {}
     fun onRemove(post: Post) {}
     fun onShare(post: Post) {}
+
+    fun avatarLoad(post: Post)
 }
+
+private val urls = listOf("netology.jpg", "sber.jpg", "tcs.jpg")
+private var index = 0
 
 class PostsAdapter(
     private val onInteractionListener: OnInteractionListener,
@@ -37,6 +46,22 @@ class PostViewHolder(
     private val onInteractionListener: OnInteractionListener,
 ) : RecyclerView.ViewHolder(binding.root) {
 
+    fun ImageView.load(
+        url: String,
+        @DrawableRes placeholder: Int = R.drawable.ic_baseline_upload_file_48,
+        @DrawableRes fallback: Int = R.drawable.ic_baseline_error_outline_48,
+        timeOutMs: Int = 10_000
+    ) {
+        Glide.with(this)
+            .load(url)
+            .circleCrop()
+            .timeout(timeOutMs)
+            .placeholder(placeholder)
+            .error(fallback)
+
+            .into(this)
+    }
+
     fun bind(post: Post) {
         binding.apply {
             author.text = post.author
@@ -46,6 +71,25 @@ class PostViewHolder(
             like.isChecked = post.likedByMe
             like.text = "${post.likes}"
 
+
+
+
+            avatar.setOnClickListener {
+
+                if (index == urls.size) {
+                    index = 0
+                }
+
+                val urlAvatar = "http://10.0.2.2:9999/avatars/${urls[index++]}"
+
+                onInteractionListener.avatarLoad(post.copy(authorAvatar = urlAvatar))
+
+
+            }
+            avatar.load(post.authorAvatar)
+
+
+//
             menu.setOnClickListener {
                 PopupMenu(it.context, it).apply {
                     inflate(R.menu.options_post)

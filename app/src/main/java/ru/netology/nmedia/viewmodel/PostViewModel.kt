@@ -2,7 +2,6 @@ package ru.netology.nmedia.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.*
-import okhttp3.Response
 import ru.netology.nmedia.dto.Post
 import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.repository.*
@@ -16,7 +15,8 @@ private val empty = Post(
     author = "",
     likedByMe = false,
     likes = 0,
-    published = ""
+    published = "",
+    authorAvatar = ""
 )
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
@@ -54,7 +54,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         edited.value?.let {
 
             repository.save(it, object : PostRepository.Callback<Unit> {
-                override fun onSuccess(post:Unit) {
+                override fun onSuccess(post: Unit) {
                     _postCreated.postValue(Unit)
                 }
             })
@@ -82,14 +82,15 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     fun likeById(post: Post) {
 
 
-            repository.likeById(post,
-                object : PostRepository.Callback<Post>{
-                    override fun onSuccess(post: Post) {
+        repository.likeById(post,
+            object : PostRepository.Callback<Post> {
+                override fun onSuccess(post: Post) {
 
-                        _data.postValue(
-                            _data.value?.copy (posts = _data.value?.posts.orEmpty()
-                                .map { if (it.id == post.id) post else it }))
-                    }
+                    _data.postValue(
+                        _data.value?.copy(posts = _data.value?.posts.orEmpty()
+                            .map { if (it.id == post.id) post else it })
+                    )
+                }
             })
 
 
@@ -99,7 +100,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     fun removeById(id: Long) {
         repository.removeById(id, object : PostRepository.Callback<Unit> {
             val old = _data.value?.posts.orEmpty()
-            override fun onSuccess(post:Unit) {
+            override fun onSuccess(post: Unit) {
 
                 _data.postValue(
                     _data.value?.copy(posts = _data.value?.posts.orEmpty()
@@ -108,10 +109,24 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 )
 
             }
+
             override fun onError(e: Exception) {
                 _data.postValue(_data.value?.copy(posts = old))
             }
         })
 
+    }
+
+    fun avatarLoad(post: Post) {
+        repository.avatarLoad(post,
+            object : PostRepository.Callback<Post> {
+                override fun onSuccess(data: Post) {
+
+                    _data.postValue(
+                        _data.value?.copy(posts = _data.value?.posts.orEmpty()
+                            .map { if (it.id == post.id) post else it })
+                    )
+                }
+            })
     }
 }

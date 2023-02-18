@@ -41,6 +41,10 @@ class FeedFragment : Fragment() {
                 viewModel.removeById(post.id)
             }
 
+            override fun avatarLoad(post: Post) {
+                viewModel.avatarLoad(post)
+            }
+
             override fun onShare(post: Post) {
                 val intent = Intent().apply {
                     action = Intent.ACTION_SEND
