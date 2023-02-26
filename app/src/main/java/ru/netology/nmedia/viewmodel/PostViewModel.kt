@@ -38,11 +38,11 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         _data.value = FeedModel(loading = true)
         repository.getAll(object : PostRepository.Callback<List<Post>> {
             override fun onSuccess(posts: List<Post>) {
-                _data.postValue(FeedModel(posts = posts, empty = posts.isEmpty()))
+                _data.value=FeedModel(posts = posts, empty = posts.isEmpty())
             }
 
             override fun onError(e: Exception) {
-                _data.postValue(FeedModel(error = true))
+                _data.value=FeedModel(error = true)
             }
         })
 
@@ -86,10 +86,10 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             object : PostRepository.Callback<Post> {
                 override fun onSuccess(post: Post) {
 
-                    _data.postValue(
+                    _data.value=
                         _data.value?.copy(posts = _data.value?.posts.orEmpty()
                             .map { if (it.id == post.id) post else it })
-                    )
+
                 }
             })
 
@@ -111,7 +111,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             override fun onError(e: Exception) {
-                _data.postValue(_data.value?.copy(posts = old))
+                _data.value=_data.value?.copy(posts = old)
             }
         })
 
