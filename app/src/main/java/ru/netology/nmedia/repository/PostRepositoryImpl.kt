@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
+import okio.Utf8
 import ru.netology.nmedia.dto.Post
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -53,7 +54,8 @@ class PostRepositoryImpl : PostRepository {
     }
 
 
-    override fun likeById(post: Post, callback: PostRepository.Callback<Post>){
+
+    override fun likeById(post: Post, callback: PostRepository.Callback<Post>) {
         val likedByMeValue = post.likedByMe
 
         val answer: Request = Request.Builder().let {
@@ -68,28 +70,23 @@ class PostRepositoryImpl : PostRepository {
                 override fun onFailure(call: Call, e: IOException) {
                     callback.onError(e)
                 }
+
                 override fun onResponse(call: Call, response: Response) {
                     if (!response.isSuccessful) {
                         callback.onError(Exception(response.message))
                         return
                     }
-                    val data:Post= response.body?.string()
+                    val data: Post = response.body?.string()
                         .let { gson.fromJson(it, Post::class.java) }
 
-//                    data ?: run {
-//                        callback.onError(Exception("Body is null"))
-//                        return
-//                    }
+
                     callback.onSuccess(data)
 
                 }
 
 
             })
-//            .execute().let { it.body?.string() ?: throw RuntimeException("body is null") }
-//            .let {
-//                gson.fromJson(it, Post::class.java)
-//            }
+
 
 
     }
@@ -124,7 +121,7 @@ class PostRepositoryImpl : PostRepository {
 
     }
 
-    override fun removeById(id: Long,callback: PostRepository.Callback<Unit>) {
+    override fun removeById(id: Long, callback: PostRepository.Callback<Unit>) {
         val request: Request = Request.Builder()
             .delete()
             .url("${BASE_URL}/api/slow/posts/$id")
