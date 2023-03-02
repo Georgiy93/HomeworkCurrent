@@ -1,33 +1,11 @@
 package ru.netology.nmedia.repository
 
-import android.app.ProgressDialog.show
-import android.content.Intent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Toast
-import androidx.core.content.ContextCompat.getAttributionTag
-import androidx.core.content.ContextCompat.startActivity
-import kotlinx.coroutines.NonDisposableHandle.parent
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import org.xml.sax.ErrorHandler
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import ru.netology.nmedia.R
-import ru.netology.nmedia.activity.AppActivity
-import ru.netology.nmedia.activity.ErrorHandlingActivity
-import ru.netology.nmedia.activity.FeedFragment
-import ru.netology.nmedia.activity.NewPostFragment
-import ru.netology.nmedia.adapter.PostViewHolder
 
 import ru.netology.nmedia.api.PostApi
-import ru.netology.nmedia.databinding.CardPostBinding
-import ru.netology.nmedia.databinding.FragmentNewPostBinding
 import ru.netology.nmedia.dto.Post
-import ru.netology.nmedia.model.FeedModel
 
 
 class PostRepositoryImpl : PostRepository {
@@ -43,13 +21,11 @@ class PostRepositoryImpl : PostRepository {
                 ) {
                     if (!response.isSuccessful) {
                         when (response.code()) {
-                            404 -> Toast.makeText(,"not found code 404", Toast.LENGTH_SHORT).show()
-                            500 -> Toast.makeText(,"server broken code 500", Toast.LENGTH_SHORT).show()
-                            else-> Toast.makeText(,"unknown error", Toast.LENGTH_SHORT).show()
+                            404 -> callback.onError(RuntimeException("server not found code 404"))
+                            500 -> callback.onError(RuntimeException("server broken code 500"))
+                            else-> callback.onError(RuntimeException("unknown error"))
 
                         }
-
-                        callback.onError(RuntimeException(response.message()))
                         return
                     }
                     val posts = response.body()
@@ -90,12 +66,12 @@ class PostRepositoryImpl : PostRepository {
 
                     if (!response.isSuccessful) {
                         when (response.code()) {
-                            404 -> Toast.makeText(,"not found code 404", Toast.LENGTH_SHORT).show()
-                            500 -> Toast.makeText(,"server broken code 500", Toast.LENGTH_SHORT).show()
-                            else-> Toast.makeText(,"unknown error", Toast.LENGTH_SHORT).show()
+                            404 -> callback.onError(RuntimeException("server not found code 404"))
+                            500 -> callback.onError(RuntimeException("server broken code 500"))
+                            else-> callback.onError(RuntimeException("unknown error"))
 
                         }
-                        callback.onError(RuntimeException(response.message()))
+//                        callback.onError(RuntimeException(response.message()))
                         return
                     }
                     val data = response.body()
@@ -127,12 +103,12 @@ class PostRepositoryImpl : PostRepository {
             override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
                 if (!response.isSuccessful) {
                     when (response.code()) {
-                        404 -> Toast.makeText(,"not found code 404", Toast.LENGTH_SHORT).show()
-                        500 -> Toast.makeText(,"server broken code 500", Toast.LENGTH_SHORT).show()
-                        else-> Toast.makeText(,"unknown error", Toast.LENGTH_SHORT).show()
+                        404 -> callback.onError(RuntimeException("server not found code 404"))
+                        500 -> callback.onError(RuntimeException("server broken code 500"))
+                        else-> callback.onError(RuntimeException("unknown error"))
 
                     }
-                    callback.onError(Exception(response.message()))
+//                    callback.onError(Exception(response.message()))
                     return
                 }
                 val data = response.body()
@@ -158,12 +134,12 @@ class PostRepositoryImpl : PostRepository {
             .enqueue(object : Callback<Unit> {
                 override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
                     if (!response.isSuccessful) {
-                        when (response.code()) {
-                            404 -> Toast.makeText(,"not found code 404", Toast.LENGTH_SHORT).show()
-                            500 -> Toast.makeText(,"server broken code 500", Toast.LENGTH_SHORT).show()
-                            else-> Toast.makeText(,"unknown error", Toast.LENGTH_SHORT).show()
-
-                        }
+//                        when (response.code()) {
+//                            404 -> Toast.makeText(,"not found code 404", Toast.LENGTH_SHORT).show()
+//                            500 -> Toast.makeText(,"server broken code 500", Toast.LENGTH_SHORT).show()
+//                            else-> Toast.makeText(,"unknown error", Toast.LENGTH_SHORT).show()
+//
+//                        }
                         callback.onError(Exception(response.message()))
                         return
                     }

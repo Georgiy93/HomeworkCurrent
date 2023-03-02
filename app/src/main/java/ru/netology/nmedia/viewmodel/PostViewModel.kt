@@ -21,10 +21,15 @@ private val empty = Post(
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
     // упрощённый вариант
+    private val context = getApplication<Application>().applicationContext
     private val repository: PostRepository = PostRepositoryImpl()
     private val _data = MutableLiveData(FeedModel())
+    private val _messageError=SingleLiveEvent<String>()
+        val messageError:LiveData<String>
+    get() = _messageError
     val data: LiveData<FeedModel>
         get() = _data
+
     val edited = MutableLiveData(empty)
     private val _postCreated = SingleLiveEvent<Unit>()
     val postCreated: LiveData<Unit>
@@ -38,11 +43,12 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         _data.value = FeedModel(loading = true)
         repository.getAll(object : PostRepository.Callback<List<Post>> {
             override fun onSuccess(posts: List<Post>) {
-                _data.value=FeedModel(posts = posts, empty = posts.isEmpty())
+                _data.value = FeedModel(posts = posts, empty = posts.isEmpty())
             }
 
             override fun onError(e: Exception) {
-                _data.value=FeedModel(error = true)
+                _messageError.value=e.message
+                println(_messageError.value)
             }
         })
 
@@ -56,6 +62,10 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             repository.save(it, object : PostRepository.Callback<Unit> {
                 override fun onSuccess(post: Unit) {
                     _postCreated.postValue(Unit)
+                }
+                override fun onError(e: Exception) {
+                    _messageError.value=e.message
+                    println(_messageError.value)
                 }
             })
         }
@@ -86,11 +96,16 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             object : PostRepository.Callback<Post> {
                 override fun onSuccess(post: Post) {
 
-                    _data.value=
+                    _data.value =
                         _data.value?.copy(posts = _data.value?.posts.orEmpty()
                             .map { if (it.id == post.id) post else it })
 
                 }
+                override fun onError(e: Exception) {
+                    _messageError.value=e.message
+                    println(_messageError.value)
+                }
+
             })
 
 
@@ -111,7 +126,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             override fun onError(e: Exception) {
-                _data.value=_data.value?.copy(posts = old)
+                _messageError.value=e.message
+                println(_messageError.value)
             }
         })
 
