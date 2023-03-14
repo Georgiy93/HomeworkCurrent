@@ -71,8 +71,8 @@ class PostViewHolder(
             like.isChecked = post.likedByMe
             like.text = "${post.likes}"
 
-            avatar.setOnClickListener {
-            avatar.load("${BASE_URL}/avatars/${post.authorAvatar}")}
+//            avatar.setOnClickListener {
+            avatar.load("${BASE_URL}/avatars/${post.authorAvatar}")
 
 //            avatar.setOnClickListener {
 //
