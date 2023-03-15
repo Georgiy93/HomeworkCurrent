@@ -10,10 +10,10 @@ interface PostRepository {
 
     //    fun likeById(id: Long): Post
     // cтарый варинат
-    suspend fun likeById(post: Post):Post
+    suspend fun likeById(post: Post)
     suspend fun save(post: Post)
     suspend fun removeById(id: Long)
-//    fun avatarLoad(post: Post, callback: Callback<Post>)
+
 
 
 

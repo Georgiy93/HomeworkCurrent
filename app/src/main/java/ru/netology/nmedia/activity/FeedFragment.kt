@@ -43,7 +43,7 @@ class FeedFragment : Fragment() {
 
 
             }
-//
+
             override fun onRemove(post: Post) {
 
                 viewModel.removeById(post.id)

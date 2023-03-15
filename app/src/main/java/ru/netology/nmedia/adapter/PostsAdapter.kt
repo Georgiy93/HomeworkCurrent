@@ -71,21 +71,10 @@ class PostViewHolder(
             like.isChecked = post.likedByMe
             like.text = "${post.likes}"
 
-//            avatar.setOnClickListener {
+
             avatar.load("${BASE_URL}/avatars/${post.authorAvatar}")
 
-//            avatar.setOnClickListener {
-//
-//                if (index == urls.size) {
-//                    index = 0
-//                }
-//
-//            val urlAvatar = "http://10.0.2.2:9999/avatars/${urls[index++]}"
-//            onInteractionListener.avatarLoad(post.copy(authorAvatar = urlAvatar))
 
-//
-//
-//            }
 
                 menu.setOnClickListener {
                     PopupMenu(it.context, it).apply {

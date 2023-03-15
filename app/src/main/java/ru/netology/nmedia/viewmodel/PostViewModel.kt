@@ -29,7 +29,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: PostRepository =
         PostRepositoryImpl(AppDb.getInstance(application).postDao())
     private val _state = MutableLiveData(FeedModelState())
-val _data = MutableLiveData(FeedModel())
+
 
     private val _messageError = SingleLiveEvent<String>()
     val messageError: LiveData<String>
@@ -119,16 +119,13 @@ val _data = MutableLiveData(FeedModel())
 
         viewModelScope.launch {
             try {
-                val likedPost = repository.likeById(post)
-                val currentPosts = data.value?.posts.orEmpty()
-                val updatedPosts = currentPosts.map {
-                    if (it.id == likedPost.id) likedPost else it
-                }
+                 repository.likeById(post)
+
                 _state.value = FeedModelState()
-                _data.value = _data.value?.copy(posts =updatedPosts )
+
 
             } catch (e: Exception) {
-                //_state.value = FeedModelState(error = true)
+
                 _messageError.value = e.message
             }
         }
@@ -138,74 +135,12 @@ val _data = MutableLiveData(FeedModel())
         viewModelScope.launch {
             try {
                 repository.removeById(id)
-                _data.postValue(
-                    _data.value?.copy(posts = _data.value?.posts.orEmpty()
-                        .filter { it.id != id }
-                    )
-                )
+
             } catch (e: Exception) {
 
                 _messageError.value = e.message
             }
         }
     }
-//        repository.likeById(post,
-//            object : PostRepository.Callback<Post> {
-//                override fun onSuccess(post: Post) {
-//
-//                    _data.value =
-//                        _data.value?.copy(posts = _data.value?.posts.orEmpty()
-//                            .map { if (it.id == post.id) post else it })
-//
-//                }
-//
-//                override fun onError(e: Exception) {
-//                    _messageError.value = e.message
-//                    println(_messageError.value)
-//                }
-//
-//            })
 
-
-//    fun removeById(id: Long) {
-//        viewModelScope.launch {
-//            try {
-//                repository.removeById(id)
-//                _state.postValue(
-//                    _state.value?.copy(posts = _state.value?.posts.orEmpty()
-//                        .filter { it.id != id }
-//                    )
-//                )
-//            } catch (e: Exception) {
-//
-//                _messageError.value = e.message
-//            }
-//        }
-//    }
-//        repository.removeById(id, object : PostRepository.Callback<Unit> {
-//            val old = _data.value?.posts.orEmpty()
-//            override fun onSuccess(post: Unit) {
-//
-//                _data.postValue(
-//                    _data.value?.copy(posts = _data.value?.posts.orEmpty()
-//                        .filter { it.id != id }
-//                    )
-//                )
-//
-//            }
-//
-//            override fun onError(e: Exception) {
-//                _messageError.value = e.message
-//                println(_messageError.value)
-//            }
-//        })
-
-//                override fun onSuccess(post: Unit) {
-//                    _postCreated.postValue(Unit)
-//                }
-//                override fun onError(e: Exception) {
-//                    _messageError.value=e.message
-//                    println(_messageError.value)
-//                }
-//            })
 }

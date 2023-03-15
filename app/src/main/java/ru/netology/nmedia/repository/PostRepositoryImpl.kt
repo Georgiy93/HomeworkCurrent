@@ -25,7 +25,7 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
         postDao.insert(posts.map(PostEntity::fromDto))
     }
 
-    override suspend fun likeById(post: Post): Post {
+    override suspend fun likeById(post: Post) {
 
         val likedByMeValue = post.likedByMe
         val postResponse = PostApi.service.let {
@@ -39,7 +39,12 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
             throw HttpException(postResponse)
 
         }
-        return postResponse.body() ?: throw HttpException(postResponse)
+        val updatedPost=postResponse.body() ?:throw HttpException(postResponse)
+        val postEntity = PostEntity.fromDto(updatedPost)
+        postDao.insert(postEntity)
+
+
+
 
     }
 
@@ -47,8 +52,10 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
         val response=PostApi.service.savePost(post)
         if (!response.isSuccessful) {
             throw HttpException(response)
-            return response.body() ?: throw HttpException(response)
+
+
         }
+
 
     }
 
@@ -57,7 +64,8 @@ class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
         if (!response.isSuccessful) {
             throw HttpException(response)
         }
-        return response.body() ?: throw HttpException(response)
+
+        postDao.removeById(id)
     }
 
 }
