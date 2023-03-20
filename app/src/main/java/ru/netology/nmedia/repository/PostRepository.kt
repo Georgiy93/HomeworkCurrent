@@ -1,22 +1,21 @@
 package ru.netology.nmedia.repository
 
+import androidx.lifecycle.LiveData
 import okhttp3.Response
 import ru.netology.nmedia.dto.Post
 
 interface PostRepository {
-    fun getAll(callback: Callback<List<Post>>)
+    val data:LiveData<List<Post>>
+    suspend fun getAll()
 
     //    fun likeById(id: Long): Post
     // cтарый варинат
-    fun likeById(post: Post, callback: Callback<Post>)
-    fun save(post: Post, callback: Callback<Unit>)
-    fun removeById(id: Long, callback: Callback<Unit>)
-//    fun avatarLoad(post: Post, callback: Callback<Post>)
+    suspend fun likeById(post: Post)
+    suspend fun save(post: Post)
+    suspend fun removeById(id: Long)
 
-    interface Callback<T> {
-        fun onSuccess(data: T) {}
-        fun onError(e: Exception) {}
-    }
+
+
 
 
 }

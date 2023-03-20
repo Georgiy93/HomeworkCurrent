@@ -1,162 +1,71 @@
 package ru.netology.nmedia.repository
 
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.map
+import retrofit2.HttpException
 
 import ru.netology.nmedia.api.PostApi
+import ru.netology.nmedia.dao.PostDao
 import ru.netology.nmedia.dto.Post
+import ru.netology.nmedia.entity.PostEntity
 
 
-class PostRepositoryImpl : PostRepository {
+class PostRepositoryImpl(private val postDao: PostDao) : PostRepository {
+    override val data: LiveData<List<Post>> = postDao.getAll().map { it.map(PostEntity::toDto) }
 
 
-    override fun getAll(callback: PostRepository.Callback<List<Post>>) {
 
-        PostApi.service.getALL()
-            .enqueue(object : Callback<List<Post>> {
-                override fun onResponse(
-                    call: Call<List<Post>>,
-                    response: Response<List<Post>>
-                ) {
-                    if (!response.isSuccessful) {
-                        when (response.code()) {
-                            404 -> callback.onError(RuntimeException("server not found code 404"))
-                            500 -> callback.onError(RuntimeException("server broken code 500"))
-                            else-> callback.onError(RuntimeException("unknown error"))
+    override suspend fun getAll() {
+        val postsResponse = PostApi.service.getALL()
+        if (!postsResponse.isSuccessful) {
+            throw HttpException(postsResponse)
 
-                        }
-                        return
-                    }
-                    val posts = response.body()
-                    if (posts == null) {
-                        callback.onError(RuntimeException("Body is null"))
-                        return
-                    }
-                    callback.onSuccess(posts)
-                }
-
-                override fun onFailure(call: Call<List<Post>>, t: Throwable) {
-                    callback.onError(Exception(t))
-                }
-
-
-            })
-
+        }
+        val posts = postsResponse.body().orEmpty()
+        postDao.insert(posts.map(PostEntity::fromDto))
     }
 
+    override suspend fun likeById(post: Post) {
 
-    override fun likeById(post: Post, callback: PostRepository.Callback<Post>) {
         val likedByMeValue = post.likedByMe
-        PostApi.service.let {
+        val postResponse = PostApi.service.let {
             if (likedByMeValue)
                 it.dislikeById(post.id)
+
             else
                 it.likeById(post.id)
         }
+        if (!postResponse.isSuccessful) {
+            throw HttpException(postResponse)
 
-            .enqueue(object : Callback<Post> {
-
-
-                override fun onResponse(
-                    call: Call<Post>,
-                    response: Response<Post>
-                ) {
-
-
-                    if (!response.isSuccessful) {
-                        when (response.code()) {
-                            404 -> callback.onError(RuntimeException("server not found code 404"))
-                            500 -> callback.onError(RuntimeException("server broken code 500"))
-                            else-> callback.onError(RuntimeException("unknown error"))
-
-                        }
-//                        callback.onError(RuntimeException(response.message()))
-                        return
-                    }
-                    val data = response.body()
-                    if (data == null) {
-                        callback.onError(RuntimeException("Body is null"))
-                        return
-                    }
-
-                    callback.onSuccess(data)
+        }
+        val updatedPost=postResponse.body() ?:throw HttpException(postResponse)
+        val postEntity = PostEntity.fromDto(updatedPost)
+        postDao.insert(postEntity)
 
 
-                }
-
-                override fun onFailure(call: Call<Post>, t: Throwable) {
-                    callback.onError(Exception(t))
-                }
-
-
-            })
 
 
     }
 
+    override suspend fun save(post: Post) {
+        val response=PostApi.service.savePost(post)
+        if (!response.isSuccessful) {
+            throw HttpException(response)
 
-// TODO: do this in homework
 
-    override fun save(post: Post, callback: PostRepository.Callback<Unit>) {
-        PostApi.service.savePost(post).enqueue(object : Callback<Unit> {
-            override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
-                if (!response.isSuccessful) {
-                    when (response.code()) {
-                        404 -> callback.onError(RuntimeException("server not found code 404"))
-                        500 -> callback.onError(RuntimeException("server broken code 500"))
-                        else-> callback.onError(RuntimeException("unknown error"))
+        }
 
-                    }
-//                    callback.onError(Exception(response.message()))
-                    return
-                }
-                val data = response.body()
-                if (data == null) {
-                    callback.onError(RuntimeException("Body is null"))
-                    return
-                }
-
-                callback.onSuccess(data)
-            }
-
-            override fun onFailure(call: Call<Unit>, t: Throwable) {
-                callback.onError(Exception(t))
-            }
-
-        })
 
     }
 
+    override suspend fun removeById(id: Long) {
+        val response = PostApi.service.deletePostById(id)
+        if (!response.isSuccessful) {
+            throw HttpException(response)
+        }
 
-    override fun removeById(id: Long, callback: PostRepository.Callback<Unit>) {
-        PostApi.service.deletePostById(id)
-            .enqueue(object : Callback<Unit> {
-                override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
-                    if (!response.isSuccessful) {
-//                        when (response.code()) {
-//                            404 -> Toast.makeText(,"not found code 404", Toast.LENGTH_SHORT).show()
-//                            500 -> Toast.makeText(,"server broken code 500", Toast.LENGTH_SHORT).show()
-//                            else-> Toast.makeText(,"unknown error", Toast.LENGTH_SHORT).show()
-//
-//                        }
-                        callback.onError(Exception(response.message()))
-                        return
-                    }
-                    val data = response.body()
-                    if (data == null) {
-                        callback.onError(RuntimeException("Body is null"))
-                        return
-                    }
-
-                    callback.onSuccess(data)
-                }
-
-                override fun onFailure(call: Call<Unit>, t: Throwable) {
-                    callback.onError(Exception(t))
-                }
-
-            })
+        postDao.removeById(id)
     }
 
 }
